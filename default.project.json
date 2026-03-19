@@ -1,0 +1,59 @@
+{
+  "name": "InsectEvolution",
+  "tree": {
+    "$className": "DataModel",
+
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "InsectData": {
+        "$path": "src/ReplicatedStorage/InsectData.lua"
+      },
+      "GameConfig": {
+        "$path": "src/ReplicatedStorage/GameConfig.lua"
+      },
+      "RemoteEvents": {
+        "$path": "src/ReplicatedStorage/RemoteEvents.lua"
+      }
+    },
+
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "GameServer": {
+        "$path": "src/ServerScriptService/GameServer.server.lua"
+      },
+      "AbilityHandler": {
+        "$path": "src/ServerScriptService/AbilityHandler.server.lua"
+      },
+      "MapBuilder": {
+        "$path": "src/ServerScriptService/MapBuilder.server.lua"
+      }
+    },
+
+    "StarterPlayer": {
+      "$className": "StarterPlayer",
+      "StarterPlayerScripts": {
+        "$className": "StarterPlayerScripts",
+        "GameClient": {
+          "$path": "src/StarterPlayer/StarterPlayerScripts/GameClient.client.lua"
+        }
+      }
+    },
+
+    "StarterGui": {
+      "$className": "StarterGui",
+      "HUD": {
+        "$path": "src/StarterGui/HUD.client.lua"
+      },
+      "InsectSelect": {
+        "$path": "src/StarterGui/InsectSelect.client.lua"
+      }
+    },
+
+    "Workspace": {
+      "$className": "Workspace",
+      "$properties": {
+        "Gravity": 196.2
+      }
+    }
+  }
+}
