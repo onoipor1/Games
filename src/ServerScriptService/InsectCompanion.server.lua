@@ -19,6 +19,7 @@ local RunService        = game:GetService("RunService")
 local InsectData  = require(ReplicatedStorage:WaitForChild("InsectData"))
 local TalentData  = require(ReplicatedStorage:WaitForChild("TalentData"))
 local SpiderModel = require(script.Parent:WaitForChild("SpiderModel"))
+local AntModel    = require(script.Parent:WaitForChild("AntModel"))
 
 -- ─────────────────────────────────────────
 -- Per-player state
@@ -207,6 +208,8 @@ local function spawnCompanion(player)
 
 	if data.insectType == "Spider" then
 		model, body, hpFill, nameLbl, spiderParts = SpiderModel.Build(stageIndex)
+	elseif data.insectType == "Ant" then
+		model, body, hpFill, nameLbl, spiderParts = AntModel.Build(stageIndex)
 	else
 		model, body, hpFill, nameLbl = buildCompanionModel(data.insectType, stageIndex)
 	end
