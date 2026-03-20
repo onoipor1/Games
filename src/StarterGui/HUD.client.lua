@@ -2,10 +2,13 @@
 -- Builds and manages the in-game heads-up display:
 --   • Health bar
 --   • XP bar & progress
+--   • Crystal balance
+--   • Active event banner chip
 --   • Stage name & insect type
 --   • Ability slots (1-4)
 --   • Evolution notification popup
 --   • Floating damage numbers
+--   • Shop / Pet / Admin hotkeys (B = shop, N = pets)
 
 local Players           = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -195,6 +198,42 @@ local xpText = label("XPText", "0 / 50",
 	Color3.new(1, 1, 1)
 )
 xpText.ZIndex = 3
+
+-- ─────────────────────────────────────────
+-- Crystal balance display (top right)
+-- ─────────────────────────────────────────
+local crystalPanel = panel("CrystalPanel",
+	UDim2.new(0, 160, 0, 36),
+	UDim2.new(1, -176, 0, 16),
+	C.Panel
+)
+crystalPanel.BackgroundTransparency = 0.2
+local crystalLabel = label("CrystalCount", "💎 0",
+	UDim2.new(1, -8, 1, 0),
+	UDim2.new(0, 6, 0, 0),
+	crystalPanel,
+	Enum.Font.GothamBold,
+	C.CrystalColor
+)
+crystalLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+-- ─────────────────────────────────────────
+-- Active event chip (top centre)
+-- ─────────────────────────────────────────
+local eventChip = panel("EventChip",
+	UDim2.new(0, 240, 0, 28),
+	UDim2.new(0.5, -120, 0, 16),
+	Color3.fromRGB(40, 20, 10)
+)
+eventChip.BackgroundTransparency = 0.3
+eventChip.Visible = false
+local eventChipLabel = label("EventLabel", "",
+	UDim2.new(1, -8, 1, 0),
+	UDim2.new(0, 4, 0, 0),
+	eventChip,
+	Enum.Font.GothamBold,
+	C.Gold
+)
 
 -- ─────────────────────────────────────────
 -- Bottom: Ability slots (1–4)
@@ -460,6 +499,44 @@ RunService.RenderStepped:Connect(function()
 		else
 			slot.cdOverlay.Visible = false
 		end
+	end
+end)
+
+-- ─────────────────────────────────────────
+-- Crystal & event remote handlers
+-- ─────────────────────────────────────────
+local Remotes = ReplicatedStorage:WaitForChild("Remotes")
+
+Remotes:FindFirstChild("CrystalsChanged").OnClientEvent:Connect(function(amount)
+	crystalLabel.Text = "💎 " .. tostring(amount)
+end)
+
+Remotes:FindFirstChild("EventChanged").OnClientEvent:Connect(function(data)
+	if data and data.name and data.name ~= "None" then
+		eventChipLabel.Text = "⚡ " .. data.name
+		eventChip.Visible   = true
+	else
+		eventChip.Visible = false
+	end
+end)
+
+-- ─────────────────────────────────────────
+-- Hotkeys: B = Shop, N = Pets
+-- ─────────────────────────────────────────
+local UserInputService = game:GetService("UserInputService")
+UserInputService.InputBegan:Connect(function(input, processed)
+	if processed then return end
+	if input.KeyCode == Enum.KeyCode.B then
+		if _G.ToggleShop then _G.ToggleShop() end
+	elseif input.KeyCode == Enum.KeyCode.N then
+		if _G.TogglePets then _G.TogglePets() end
+	end
+end)
+
+-- Update crystal display from StatsChanged (initial load)
+evUpdateHUD.Event:Connect(function(data)
+	if data.crystals then
+		crystalLabel.Text = "💎 " .. tostring(data.crystals)
 	end
 end)
 
