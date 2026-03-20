@@ -18,6 +18,7 @@ local RunService        = game:GetService("RunService")
 
 local InsectData  = require(ReplicatedStorage:WaitForChild("InsectData"))
 local TalentData  = require(ReplicatedStorage:WaitForChild("TalentData"))
+local SpiderModel = require(script.Parent:WaitForChild("SpiderModel"))
 
 -- ─────────────────────────────────────────
 -- Per-player state
@@ -201,15 +202,30 @@ local function spawnCompanion(player)
 	local stageDef = InsectData.GetStage(data.insectType, data.stageIndex or 1)
 	if not stageDef then return end
 
-	local model, body, hpFill, nameLbl = buildCompanionModel(data.insectType, data.stageIndex or 1)
+	local stageIndex = data.stageIndex or 1
+	local model, body, hpFill, nameLbl, spiderParts
+
+	if data.insectType == "Spider" then
+		model, body, hpFill, nameLbl, spiderParts = SpiderModel.Build(stageIndex)
+	else
+		model, body, hpFill, nameLbl = buildCompanionModel(data.insectType, stageIndex)
+	end
 	if not model then return end
 
-	local maxHp   = calcCompanionHP(player, stageDef)
-	local char    = player.Character
-	local hrp     = char and char:FindFirstChild("HumanoidRootPart")
+	local maxHp    = calcCompanionHP(player, stageDef)
+	local char     = player.Character
+	local hrp      = char and char:FindFirstChild("HumanoidRootPart")
 	local startPos = hrp and (hrp.Position + Vector3.new(4, 3, 0)) or Vector3.new(0, 5, 0)
-	body.CFrame   = CFrame.new(startPos)
-	model.Parent  = workspace
+	local startCF  = CFrame.new(startPos)
+
+	body.CFrame = startCF
+	-- Position all spider parts at their correct world locations on spawn
+	if spiderParts then
+		for _, pd in ipairs(spiderParts) do
+			pd.part.CFrame = startCF * pd.offset
+		end
+	end
+	model.Parent = workspace
 
 	Companions[player] = {
 		model        = model,
@@ -223,7 +239,8 @@ local function spawnCompanion(player)
 		dead         = false,
 		respawnTimer = 0,
 		insectType   = data.insectType,
-		stageIndex   = data.stageIndex or 1,
+		stageIndex   = stageIndex,
+		parts        = spiderParts,   -- nil for non-spider; used in heartbeat
 	}
 
 	getRemotes():FindFirstChild("CompanionUpdate"):FireClient(player, {
@@ -386,11 +403,21 @@ RunService.Heartbeat:Connect(function(dt)
 			)
 		end
 
-		local newPos = myPos:Lerp(targetPos, math.min(1, dt * 6))
-		rec.body.CFrame = CFrame.new(newPos)
+		local newPos  = myPos:Lerp(targetPos, math.min(1, dt * 6))
+		local bodyCF  = CFrame.new(newPos)
+		rec.body.CFrame = bodyCF
 
-		local glowPart = rec.model:FindFirstChild("GlowCore")
-		if glowPart then glowPart.CFrame = rec.body.CFrame end
+		-- Move all attached parts (spider model uses a parts table; others fall back to GlowCore)
+		if rec.parts then
+			for _, pd in ipairs(rec.parts) do
+				if pd.part and pd.part.Parent then
+					pd.part.CFrame = bodyCF * pd.offset
+				end
+			end
+		else
+			local glowPart = rec.model:FindFirstChild("GlowCore")
+			if glowPart then glowPart.CFrame = bodyCF end
+		end
 
 		-- ── Attack ────────────────────────────────────────
 		-- Only attack if companion is within attackRange of the target
