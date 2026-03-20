@@ -499,48 +499,19 @@ end)
 
 -- ─────────────────────────────────────────
 -- Remotes: combat
+-- AttackEnemy now targets the companion at the clicked enemy.
+-- The companion moves to the enemy and attacks when within range.
 -- ─────────────────────────────────────────
 Remotes:FindFirstChild("AttackEnemy").OnServerEvent:Connect(function(player, enemyModelName)
 	local data = PlayerData[player]
-	if not data then return end
-	if not data.insectType then return end
+	if not data or not data.insectType then return end
 
-	local stageInfo = InsectData.GetStage(data.insectType, data.stageIndex)
-	if not stageInfo then return end
+	-- Basic sanity: enemy model must exist
+	if not workspace:FindFirstChild(enemyModelName) then return end
 
-	local char = player.Character
-	local hrp  = char and char:FindFirstChild("HumanoidRootPart")
-	if not hrp then return end
-
-	local enemyModel = workspace:FindFirstChild(enemyModelName)
-	if not enemyModel then return end
-	local enemyBody  = enemyModel:FindFirstChild("HumanoidRootPart")
-	if not enemyBody then return end
-	if (hrp.Position - enemyBody.Position).Magnitude
-		> GameConfig.AttackRange + stageInfo.size * 6 then return end
-
-	local passMults = (_G.GetMultipliers and _G.GetMultipliers(player)) or { dmgMult = 1 }
-	local petBuffs  = (_G.GetPetBuffs and _G.GetPetBuffs(player)) or { damagePercent = 0 }
-	local rebMults  = LevelData.GetRebirthMults(data.rebirths)
-
-	local finalDmg = math.floor(
-		stageInfo.damage
-		* (passMults.dmgMult or 1)
-		* (1 + (petBuffs.damagePercent or 0))
-		* rebMults.dmgMult
-	)
-
-	local xpReward, crystalBase
-	if _G.DamageEnemy then
-		xpReward, crystalBase = _G.DamageEnemy(enemyModelName, finalDmg)
-	end
-
-	if xpReward then
-		local eventMult   = (_G.ActiveEvent and _G.ActiveEvent.crystalMult) or 1.0
-		local crystalMult = (passMults.crystalMult or 1.0) * eventMult
-		local cGain = math.floor((crystalBase or 0) * crystalMult)
-		if cGain > 0 then _G.AddCrystals(player, cGain) end
-		addXP(player, xpReward)
+	-- Delegate to companion targeting system
+	if _G.SetCompanionTarget then
+		_G.SetCompanionTarget(player, enemyModelName)
 	end
 end)
 

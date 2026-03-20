@@ -12,6 +12,7 @@ GamePasses.IDs = {
 	VIP        = 000000001,   -- "VIP" pass
 	DoubleXP   = 000000002,   -- "Double XP" pass
 	DoubleDmg  = 000000003,   -- "Double Damage" pass
+	AutoAttack = 000000004,   -- "Auto-Attack" pass (unlock by liking the game)
 }
 
 -- ─────────────────────────────────────────
