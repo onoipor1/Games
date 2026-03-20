@@ -1,21 +1,21 @@
 -- ZoneData.lua
 -- Five progression zones spread across a large shared world.
--- Each zone has a level range, safe-spawn radius, exit portals, food pool, and enemy set.
+-- Each zone is 600×600 studs (4× the original area).
 --
--- World layout (top-down view, zones are 300×300 studs each):
+-- World layout (top-down view):
 --
---   [Grassland  1–10 ] ........gap........ [Wetland   10–20] ........gap........ [Mushroom 20–30]
---         |                                                                              |
---      (portal)                                                                       (portal)
---         |                                                                              |
---   [Volcanic  30–40] ........gap........ [Crystal  40–50 ]
+--   [Grassland  1–10 ] .......800 gap....... [Wetland   10–20] .......800 gap....... [Mushroom 20–30]
+--         |                                                                                  |
+--      (portal)                                                                           (portal)
+--         |                                                                                  |
+--   [Volcanic  30–40] .......800 gap....... [Crystal  40–50 ]
 --
 -- Portals teleport players instantly; no physical corridors needed.
 -- A portal only works if the player meets the minLevel requirement.
 
 local ZoneData = {}
 
-ZoneData.SafeZoneRadius = 35   -- default safe-spawn radius (studs)
+ZoneData.SafeZoneRadius = 60   -- default safe-spawn radius (studs) — scaled up for larger zones
 
 -- ─────────────────────────────────────────
 -- Zone definitions
@@ -24,7 +24,7 @@ ZoneData.Zones = {
 
 	-- ══════════════════════════════════════════════════
 	-- ZONE 1: GRASSLAND  (Level 1–10)
-	-- Starting area. Sunny fields. Mobs scale 1→10 by distance.
+	-- Center (0,0). 600×600 studs. Bounds ±300.
 	-- ══════════════════════════════════════════════════
 	Grassland = {
 		key          = "Grassland",
@@ -35,18 +35,17 @@ ZoneData.Zones = {
 		minLevel     = 1,
 		maxLevel     = 10,
 		bossLevel    = 12,
-		bounds       = { minX = -150, maxX = 150, minZ = -150, maxZ = 150 },
+		bounds       = { minX = -300, maxX = 300, minZ = -300, maxZ = 300 },
 		spawn        = Vector3.new(0, 3, 0),
-		safeZoneRadius = 35,
-		-- Portals inside this zone that lead elsewhere
+		safeZoneRadius = 60,
 		portals = {
-			{ destination = "Wetland",  minLevel = 10, position = Vector3.new(130, 3,   0) },
-			{ destination = "Volcanic", minLevel = 30, position = Vector3.new(  0, 3, 130) },
+			{ destination = "Wetland",  minLevel = 10, position = Vector3.new(270, 3,   0) },
+			{ destination = "Volcanic", minLevel = 30, position = Vector3.new(  0, 3, 270) },
 		},
 		enemyZone  = "Grassland",
 		bossKey    = "MantisOverlord",
-		maxNormals = 14,
-		maxElites  = 3,
+		maxNormals = 20,
+		maxElites  = 5,
 		food = {
 			{
 				key = "CloverLeaf", displayName = "Clover Leaf",
@@ -71,7 +70,7 @@ ZoneData.Zones = {
 
 	-- ══════════════════════════════════════════════════
 	-- ZONE 2: WETLAND  (Level 10–20)
-	-- Damp shores and murky shallows. Faster, poisonous mobs.
+	-- Center (800,0). 600×600 studs. Bounds X:500–1100, Z:±300.
 	-- ══════════════════════════════════════════════════
 	Wetland = {
 		key          = "Wetland",
@@ -82,17 +81,17 @@ ZoneData.Zones = {
 		minLevel     = 10,
 		maxLevel     = 20,
 		bossLevel    = 22,
-		bounds       = { minX = 350, maxX = 650, minZ = -150, maxZ = 150 },
-		spawn        = Vector3.new(500, 3, 0),
-		safeZoneRadius = 35,
+		bounds       = { minX = 500, maxX = 1100, minZ = -300, maxZ = 300 },
+		spawn        = Vector3.new(800, 3, 0),
+		safeZoneRadius = 60,
 		portals = {
-			{ destination = "Grassland", minLevel =  1, position = Vector3.new(370, 3,   0) },
-			{ destination = "Mushroom",  minLevel = 20, position = Vector3.new(630, 3,   0) },
+			{ destination = "Grassland", minLevel =  1, position = Vector3.new(530, 3,   0) },
+			{ destination = "Mushroom",  minLevel = 20, position = Vector3.new(1070, 3,   0) },
 		},
 		enemyZone  = "Wetland",
 		bossKey    = "DragonFlyWarlord",
-		maxNormals = 14,
-		maxElites  = 3,
+		maxNormals = 20,
+		maxElites  = 5,
 		food = {
 			{
 				key = "AlgaeClump", displayName = "Algae Clump",
@@ -117,7 +116,7 @@ ZoneData.Zones = {
 
 	-- ══════════════════════════════════════════════════
 	-- ZONE 3: MUSHROOM HOLLOW  (Level 20–30)
-	-- Bioluminescent spore forest. Ranged and AoE mobs.
+	-- Center (1600,0). 600×600 studs. Bounds X:1300–1900, Z:±300.
 	-- ══════════════════════════════════════════════════
 	Mushroom = {
 		key          = "Mushroom",
@@ -128,17 +127,17 @@ ZoneData.Zones = {
 		minLevel     = 20,
 		maxLevel     = 30,
 		bossLevel    = 32,
-		bounds       = { minX = 850, maxX = 1150, minZ = -150, maxZ = 150 },
-		spawn        = Vector3.new(1000, 3, 0),
-		safeZoneRadius = 35,
+		bounds       = { minX = 1300, maxX = 1900, minZ = -300, maxZ = 300 },
+		spawn        = Vector3.new(1600, 3, 0),
+		safeZoneRadius = 60,
 		portals = {
-			{ destination = "Wetland",  minLevel = 10, position = Vector3.new( 870, 3,   0) },
-			{ destination = "Crystal",  minLevel = 40, position = Vector3.new(1130, 3,   0) },
+			{ destination = "Wetland",  minLevel = 10, position = Vector3.new(1330, 3,   0) },
+			{ destination = "Crystal",  minLevel = 40, position = Vector3.new(1600, 3, 270) },
 		},
 		enemyZone  = "Mushroom",
 		bossKey    = "SporeTitan",
-		maxNormals = 14,
-		maxElites  = 4,
+		maxNormals = 20,
+		maxElites  = 6,
 		food = {
 			{
 				key = "SporeCap", displayName = "Spore Cap",
@@ -163,7 +162,7 @@ ZoneData.Zones = {
 
 	-- ══════════════════════════════════════════════════
 	-- ZONE 4: VOLCANIC CAVERN  (Level 30–40)
-	-- Scorching lava realm. Fire-themed mobs. High DoT danger.
+	-- Center (0,800). 600×600 studs. Bounds X:±300, Z:500–1100.
 	-- ══════════════════════════════════════════════════
 	Volcanic = {
 		key          = "Volcanic",
@@ -174,17 +173,17 @@ ZoneData.Zones = {
 		minLevel     = 30,
 		maxLevel     = 40,
 		bossLevel    = 42,
-		bounds       = { minX = -150, maxX = 150, minZ = 350, maxZ = 650 },
-		spawn        = Vector3.new(0, 3, 500),
-		safeZoneRadius = 35,
+		bounds       = { minX = -300, maxX = 300, minZ = 500, maxZ = 1100 },
+		spawn        = Vector3.new(0, 3, 800),
+		safeZoneRadius = 60,
 		portals = {
-			{ destination = "Grassland", minLevel =  1, position = Vector3.new(  0, 3, 370) },
-			{ destination = "Crystal",   minLevel = 40, position = Vector3.new(130, 3, 500) },
+			{ destination = "Grassland", minLevel =  1, position = Vector3.new(  0, 3, 530) },
+			{ destination = "Crystal",   minLevel = 40, position = Vector3.new(270, 3, 800) },
 		},
 		enemyZone  = "Volcanic",
 		bossKey    = "PyroclastQueen",
-		maxNormals = 14,
-		maxElites  = 4,
+		maxNormals = 20,
+		maxElites  = 6,
 		food = {
 			{
 				key = "EmberGrub", displayName = "Ember Grub",
@@ -209,7 +208,7 @@ ZoneData.Zones = {
 
 	-- ══════════════════════════════════════════════════
 	-- ZONE 5: CRYSTAL ABYSS  (Level 40–50)
-	-- Mysterious void crystallised into lethal geometry. End-game.
+	-- Center (800,800). 600×600 studs. Bounds X:500–1100, Z:500–1100.
 	-- ══════════════════════════════════════════════════
 	Crystal = {
 		key          = "Crystal",
@@ -220,17 +219,17 @@ ZoneData.Zones = {
 		minLevel     = 40,
 		maxLevel     = 50,
 		bossLevel    = 52,
-		bounds       = { minX = 350, maxX = 650, minZ = 350, maxZ = 650 },
-		spawn        = Vector3.new(500, 3, 500),
-		safeZoneRadius = 35,
+		bounds       = { minX = 500, maxX = 1100, minZ = 500, maxZ = 1100 },
+		spawn        = Vector3.new(800, 3, 800),
+		safeZoneRadius = 60,
 		portals = {
-			{ destination = "Volcanic", minLevel = 30, position = Vector3.new(370, 3, 500) },
-			{ destination = "Mushroom", minLevel = 20, position = Vector3.new(500, 3, 370) },
+			{ destination = "Volcanic", minLevel = 30, position = Vector3.new(530, 3, 800) },
+			{ destination = "Mushroom", minLevel = 20, position = Vector3.new(800, 3, 530) },
 		},
 		enemyZone  = "Crystal",
 		bossKey    = "VoidEmperor",
-		maxNormals = 14,
-		maxElites  = 4,
+		maxNormals = 20,
+		maxElites  = 6,
 		food = {
 			{
 				key = "VoidShard", displayName = "Void Shard",
@@ -277,10 +276,10 @@ function ZoneData.RandomPosOutsideSafe(zoneKey, yLevel)
 	local z  = ZoneData.Zones[zoneKey]
 	if not z then return Vector3.new(0, 3, 0) end
 	yLevel   = yLevel or 3
-	local r  = (z.safeZoneRadius or ZoneData.SafeZoneRadius) + 8
+	local r  = (z.safeZoneRadius or ZoneData.SafeZoneRadius) + 10
 	local sx = z.spawn.X
 	local sz = z.spawn.Z
-	for _ = 1, 25 do
+	for _ = 1, 30 do
 		local px = math.random(z.bounds.minX, z.bounds.maxX)
 		local pz = math.random(z.bounds.minZ, z.bounds.maxZ)
 		if math.sqrt((px - sx)^2 + (pz - sz)^2) >= r then
@@ -290,9 +289,9 @@ function ZoneData.RandomPosOutsideSafe(zoneKey, yLevel)
 	-- Fallback: radial offset from spawn
 	local angle = math.random() * math.pi * 2
 	return Vector3.new(
-		sx + math.cos(angle) * (r + 20),
+		sx + math.cos(angle) * (r + 30),
 		yLevel,
-		sz + math.sin(angle) * (r + 20)
+		sz + math.sin(angle) * (r + 30)
 	)
 end
 

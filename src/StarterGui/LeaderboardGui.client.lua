@@ -17,24 +17,25 @@ screenGui.ResetOnSpawn   = false
 screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 screenGui.Parent         = Players.LocalPlayer.PlayerGui
 
--- Toggle button (top-right)
+-- Toggle button — top right, rightmost button
 local toggleBtn          = Instance.new("TextButton")
 toggleBtn.Name           = "LBToggle"
-toggleBtn.Size           = UDim2.new(0, 110, 0, 38)
-toggleBtn.Position       = UDim2.new(1, -124, 0, 10)
-toggleBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 60)
+toggleBtn.Size           = UDim2.new(0, 118, 0, 38)
+toggleBtn.Position       = UDim2.new(1, -128, 0, 10)
+toggleBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 70)
 toggleBtn.Text           = "🏆 Leaderboard"
 toggleBtn.TextColor3     = Color3.new(1, 1, 1)
 toggleBtn.Font           = Enum.Font.GothamBold
 toggleBtn.TextSize       = 14
 toggleBtn.Parent         = screenGui
 Instance.new("UICorner", toggleBtn).CornerRadius = UDim.new(0, 8)
+Instance.new("UIStroke", toggleBtn).Color        = Color3.fromRGB(255, 210, 60)
 
--- Main panel
+-- Main panel (drops below the button)
 local panel              = Instance.new("Frame")
 panel.Name               = "LBPanel"
 panel.Size               = UDim2.new(0, 320, 0, 400)
-panel.Position           = UDim2.new(1, -334, 0, 54)
+panel.Position           = UDim2.new(1, -338, 0, 54)
 panel.BackgroundColor3   = Color3.fromRGB(10, 10, 24)
 panel.BackgroundTransparency = 0.08
 panel.Visible            = false
