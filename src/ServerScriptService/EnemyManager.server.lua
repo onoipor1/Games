@@ -413,6 +413,10 @@ local function removeEnemy(rec)
 		})
 		print(string.format("[EnemyManager] Boss '%s' defeated. Respawn in %ds.",
 			rec.def.displayName, delay))
+		-- Notify GameServer so companions can evolve
+		if _G.OnBossDefeated then
+			_G.OnBossDefeated(rec.zoneKey)
+		end
 	end
 end
 

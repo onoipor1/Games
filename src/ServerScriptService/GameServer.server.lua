@@ -40,6 +40,7 @@ local function defaultData(insectType)
 		crystals                = 0,
 		pendingRebirthSelection = false,  -- waiting to pick new insect after rebirth
 		retainedSkill           = nil,    -- skill kept from previous rebirth path
+		bossKills               = {},     -- { [zoneKey] = count } boss kills per zone
 	}
 end
 
@@ -87,39 +88,19 @@ local function applyStats(player, data)
 	if not character then return end
 	if not data.insectType then return end  -- no insect chosen yet
 
-	syncStageFromLevel(data)
+	-- Player keeps their normal Roblox avatar — no appearance changes.
+	-- Stage info is still read so we can notify the client and handle HP.
 	local stageInfo = InsectData.GetStage(data.insectType, data.stageIndex)
 	if not stageInfo then return end
 
-	-- Multipliers: passes + active event + rebirth
-	local passMults = (_G.GetMultipliers and _G.GetMultipliers(player))
-		or { xpMult = 1, crystalMult = 1, dmgMult = 1, speedBonus = 0 }
-	local petBuffs  = (_G.GetPetBuffs and _G.GetPetBuffs(player))
-		or { speed = 0, health = 0, damagePercent = 0 }
-
-	local finalMaxHP = stageInfo.maxHealth + (petBuffs.health or 0)
-	local finalSpeed = stageInfo.walkSpeed + (passMults.speedBonus or 0) + (petBuffs.speed or 0)
-	local finalJump  = stageInfo.jumpPower
-
+	-- Keep humanoid MaxHealth / WalkSpeed at sane defaults; don't morph avatar.
 	local humanoid = character:FindFirstChildOfClass("Humanoid")
 	if humanoid then
-		humanoid.MaxHealth = finalMaxHP
-		humanoid.Health    = math.min(data.currentHealth, finalMaxHP)
-		humanoid.WalkSpeed = finalSpeed
-		humanoid.JumpPower = finalJump
-		for _, scaleName in ipairs({
-			"BodyDepthScale", "BodyHeightScale", "BodyWidthScale", "HeadScale"
-		}) do
-			local sv = humanoid:FindFirstChild(scaleName)
-			if sv then sv.Value = stageInfo.size end
-		end
-	end
-
-	-- Colour body parts
-	for _, part in ipairs(character:GetDescendants()) do
-		if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
-			part.BrickColor = BrickColor.new(stageInfo.color)
-		end
+		humanoid.MaxHealth = stageInfo.maxHealth
+		humanoid.Health    = math.min(data.currentHealth, stageInfo.maxHealth)
+		-- Normal walk/jump speed; not insect-scaled
+		humanoid.WalkSpeed = 16
+		humanoid.JumpPower = 50
 	end
 
 	-- Notify client
@@ -128,7 +109,7 @@ local function applyStats(player, data)
 		insectType    = data.insectType,
 		stageIndex    = data.stageIndex,
 		stageName     = stageInfo.name,
-		maxHealth     = finalMaxHP,
+		maxHealth     = stageInfo.maxHealth,
 		currentHealth = data.currentHealth,
 		level         = data.level,
 		maxLevel      = LevelData.MaxLevel,
@@ -147,6 +128,59 @@ end
 _G.ApplyPlayerStats = function(player)
 	local data = PlayerData[player]
 	if data then applyStats(player, data) end
+end
+
+-- ─────────────────────────────────────────
+-- Boss-gated companion evolution
+-- Called by EnemyManager after a boss dies
+-- ─────────────────────────────────────────
+_G.OnBossDefeated = function(zoneKey)
+	-- Advance stageIndex for all players currently in that zone
+	for _, player in ipairs(Players:GetPlayers()) do
+		local data = PlayerData[player]
+		if not data then continue end
+		if not data.insectType then continue end
+		if data.currentZone ~= zoneKey then continue end
+
+		-- Track boss kills per zone
+		data.bossKills = data.bossKills or {}
+		data.bossKills[zoneKey] = (data.bossKills[zoneKey] or 0) + 1
+
+		-- Advance companion stage (cap at 5 stages, one per zone boss)
+		local maxStages = #InsectData.GetInsectTypes()  -- use stage count as limit
+		-- Get number of stages for this insect
+		local stageCount = 0
+		for i = 1, 10 do
+			if InsectData.GetStage(data.insectType, i) then
+				stageCount = i
+			else
+				break
+			end
+		end
+
+		if data.stageIndex < stageCount then
+			data.stageIndex = data.stageIndex + 1
+			local newStage = InsectData.GetStage(data.insectType, data.stageIndex)
+			if newStage then
+				data.maxHealth     = newStage.maxHealth
+				data.currentHealth = newStage.maxHealth
+
+				-- Tell companion system to rebuild the model
+				if _G.EvolveCompanion then
+					_G.EvolveCompanion(player, data.stageIndex)
+				end
+
+				-- Notify client of evolution
+				Remotes:FindFirstChild("EvolutionUnlocked"):FireClient(player, {
+					stageName   = newStage.name,
+					stageIndex  = data.stageIndex,
+					description = newStage.description,
+					abilities   = newStage.abilities,
+				})
+				applyStats(player, data)
+			end
+		end
+	end
 end
 
 -- ─────────────────────────────────────────
@@ -636,6 +670,10 @@ local function onPlayerAdded(player)
 
 		if data.insectType then
 			applyStats(player, data)
+			-- Spawn companion pet model (InsectCompanion.server.lua)
+			if _G.SpawnCompanion then
+				_G.SpawnCompanion(player)
+			end
 		end
 		notifyCrystals(player)
 		Remotes:FindFirstChild("VisitedZonesUpdate"):FireClient(player, data.visitedZones)
@@ -664,6 +702,9 @@ local function onPlayerAdded(player)
 
 		if data.insectType then
 			applyStats(player, data)
+			if _G.SpawnCompanion then
+				_G.SpawnCompanion(player)
+			end
 		end
 		notifyCrystals(player)
 		Remotes:FindFirstChild("VisitedZonesUpdate"):FireClient(player, data.visitedZones)

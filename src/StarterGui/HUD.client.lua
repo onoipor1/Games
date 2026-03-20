@@ -318,6 +318,34 @@ local evoNameChipLabel = label("EvoNameText", "—",
 evoNameChipLabel.TextXAlignment = Enum.TextXAlignment.Left
 
 -- ─────────────────────────────────────────
+-- Companion HP bar — bottom-left, below the evo name chip
+-- ─────────────────────────────────────────
+local companionPanel = panel("CompanionPanel",
+	UDim2.new(0, 170, 0, 24),
+	UDim2.new(0, 14, 1, -68),
+	Color3.fromRGB(15, 15, 35)
+)
+companionPanel.BackgroundTransparency = 0.25
+Instance.new("UIStroke", companionPanel).Color = Color3.fromRGB(100, 80, 200)
+
+label("CompanionIcon", "🐛", UDim2.new(0, 20, 1, 0), UDim2.new(0, 2, 0, 0), companionPanel,
+	Enum.Font.GothamBold, Color3.fromRGB(180, 120, 255))
+
+local compHpHolder              = Instance.new("Frame")
+compHpHolder.Size               = UDim2.new(1, -26, 0, 10)
+compHpHolder.Position           = UDim2.new(0, 24, 0.5, -5)
+compHpHolder.BackgroundTransparency = 1
+compHpHolder.Parent             = companionPanel
+
+local _, compHpFill = bar("CompanionHP", compHpHolder,
+	Color3.fromRGB(130, 60, 220), Color3.fromRGB(30, 20, 50))
+
+local compHpText = label("CompHPText", "? / ?",
+	UDim2.new(1, 0, 1, 0), UDim2.new(0, 0, 0, 0),
+	compHpHolder, Enum.Font.GothamBold, Color3.new(1,1,1))
+compHpText.ZIndex = 3
+
+-- ─────────────────────────────────────────
 -- Evolution popup (centre screen)
 -- ─────────────────────────────────────────
 local evoPopup = panel("EvoPopup",
@@ -524,6 +552,17 @@ Remotes:FindFirstChild("EventChanged").OnClientEvent:Connect(function(data)
 	else
 		eventChip.Visible = false
 	end
+end)
+
+Remotes:WaitForChild("CompanionUpdate").OnClientEvent:Connect(function(data)
+	if not data then return end
+	local hp    = data.hp    or 0
+	local maxHp = data.maxHp or 1
+	local frac  = math.clamp(hp / maxHp, 0, 1)
+	TweenService:Create(compHpFill, TweenInfo.new(0.2), {
+		Size = UDim2.new(frac, 0, 1, 0)
+	}):Play()
+	compHpText.Text = math.floor(hp) .. "/" .. math.floor(maxHp)
 end)
 
 -- ─────────────────────────────────────────

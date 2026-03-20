@@ -57,6 +57,13 @@ local EVENT_NAMES = {
 
 	-- ── Leaderboard ────────────────────────────────────
 	"LeaderboardData",      -- Server → All   : top-10 list [{ name, level, rebirths, score }]
+
+	-- ── Companion system ────────────────────────────────
+	"CompanionUpdate",      -- Server → Client : companion HP/stage { hp, maxHp, stageIndex, insectType }
+
+	-- ── Talent tree ─────────────────────────────────────
+	"TalentPurchase",       -- Client → Server : request to buy a talent node (talentId)
+	"TalentSync",           -- Server → Client : full purchased-talent table { [talentId]=true, ... }
 }
 
 local FUNCTION_NAMES = {
