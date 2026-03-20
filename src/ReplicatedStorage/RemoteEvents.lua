@@ -53,6 +53,7 @@ local EVENT_NAMES = {
 	-- ── Rebirth system ─────────────────────────────────
 	"RebirthRequest",       -- Client → Server : player requests rebirth
 	"RebirthComplete",      -- Server → Client : rebirth granted { rebirths, xpMult, dmgMult }
+	"RebirthChooseInsect",  -- Client → Server : pick new insect type after rebirth
 
 	-- ── Leaderboard ────────────────────────────────────
 	"LeaderboardData",      -- Server → All   : top-10 list [{ name, level, rebirths, score }]
