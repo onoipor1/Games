@@ -8,8 +8,9 @@ local RemoteEvents = {}
 
 local EVENT_NAMES = {
 	-- ── Core game ──────────────────────────────────────
-	"EvolutionUnlocked",    -- Server → Client : player evolved
-	"XPChanged",            -- Server → Client : XP updated
+	"EvolutionUnlocked",    -- Server → Client : player evolved  { stageName, stageIndex, ... }
+	"XPChanged",            -- Server → Client : XP/level updated { xp, xpRequired, level, maxLevel }
+	"LevelUp",              -- Server → Client : player levelled up { level, stageEvolved }
 	"StatsChanged",         -- Server → Client : full stat snapshot
 	"UseAbility",           -- Client → Server : activate ability
 	"AbilityCooldown",      -- Server → Client : ability cooldown info
@@ -38,6 +39,23 @@ local EVENT_NAMES = {
 	"AdminCommand",         -- Client → Server : admin action payload
 	"EventChanged",         -- Server → Client : active server event changed
 	"WeatherChanged",       -- Server → Client : weather type changed
+
+	-- ── Boss system ─────────────────────────────────────────
+	"BossSpawned",          -- Server → All : boss appeared  { name, zone, maxHealth, themeColor }
+	"BossHealthChanged",    -- Server → All : boss HP update  { zone, health, maxHealth, name }
+	"BossDied",             -- Server → All : boss defeated   { name, zone, respawn }
+
+	-- ── Zone / world system ────────────────────────────
+	"ZoneTeleport",         -- Client → Server : request teleport to zone key
+	"ZoneChanged",          -- Server → Client : player moved to new zone { zone, displayName }
+	"VisitedZonesUpdate",   -- Server → Client : { ["Grassland"]=true, ... }
+
+	-- ── Rebirth system ─────────────────────────────────
+	"RebirthRequest",       -- Client → Server : player requests rebirth
+	"RebirthComplete",      -- Server → Client : rebirth granted { rebirths, xpMult, dmgMult }
+
+	-- ── Leaderboard ────────────────────────────────────
+	"LeaderboardData",      -- Server → All   : top-10 list [{ name, level, rebirths, score }]
 }
 
 local FUNCTION_NAMES = {

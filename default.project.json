@@ -9,7 +9,10 @@
       "GameConfig":    { "$path": "src/ReplicatedStorage/GameConfig.lua" },
       "RemoteEvents":  { "$path": "src/ReplicatedStorage/RemoteEvents.lua" },
       "GamePasses":    { "$path": "src/ReplicatedStorage/GamePasses.lua" },
-      "PetData":       { "$path": "src/ReplicatedStorage/PetData.lua" }
+      "PetData":       { "$path": "src/ReplicatedStorage/PetData.lua" },
+      "EnemyData":     { "$path": "src/ReplicatedStorage/EnemyData.lua" },
+      "ZoneData":      { "$path": "src/ReplicatedStorage/ZoneData.lua" },
+      "LevelData":     { "$path": "src/ReplicatedStorage/LevelData.lua" }
     },
 
     "ServerScriptService": {
@@ -19,7 +22,10 @@
       "MapBuilder":          { "$path": "src/ServerScriptService/MapBuilder.server.lua" },
       "MonetizationServer":  { "$path": "src/ServerScriptService/MonetizationServer.server.lua" },
       "PetServer":           { "$path": "src/ServerScriptService/PetServer.server.lua" },
-      "AdminServer":         { "$path": "src/ServerScriptService/AdminServer.server.lua" }
+      "AdminServer":         { "$path": "src/ServerScriptService/AdminServer.server.lua" },
+      "EnemyManager":        { "$path": "src/ServerScriptService/EnemyManager.server.lua" },
+      "ZoneManager":         { "$path": "src/ServerScriptService/ZoneManager.server.lua" },
+      "LeaderboardServer":   { "$path": "src/ServerScriptService/LeaderboardServer.server.lua" }
     },
 
     "StarterPlayer": {
@@ -33,11 +39,14 @@
 
     "StarterGui": {
       "$className": "StarterGui",
-      "HUD":          { "$path": "src/StarterGui/HUD.client.lua" },
-      "InsectSelect": { "$path": "src/StarterGui/InsectSelect.client.lua" },
-      "ShopGui":      { "$path": "src/StarterGui/ShopGui.client.lua" },
-      "PetGui":       { "$path": "src/StarterGui/PetGui.client.lua" },
-      "AdminGui":     { "$path": "src/StarterGui/AdminGui.client.lua" }
+      "HUD":            { "$path": "src/StarterGui/HUD.client.lua" },
+      "InsectSelect":   { "$path": "src/StarterGui/InsectSelect.client.lua" },
+      "ShopGui":        { "$path": "src/StarterGui/ShopGui.client.lua" },
+      "PetGui":         { "$path": "src/StarterGui/PetGui.client.lua" },
+      "AdminGui":       { "$path": "src/StarterGui/AdminGui.client.lua" },
+      "BossHud":        { "$path": "src/StarterGui/BossHud.client.lua" },
+      "ZoneGui":        { "$path": "src/StarterGui/ZoneGui.client.lua" },
+      "LeaderboardGui": { "$path": "src/StarterGui/LeaderboardGui.client.lua" }
     },
 
     "Workspace": {
