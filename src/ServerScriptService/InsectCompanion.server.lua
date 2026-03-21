@@ -22,6 +22,7 @@ local SpiderModel    = require(script.Parent:WaitForChild("SpiderModel"))
 local AntModel       = require(script.Parent:WaitForChild("AntModel"))
 local BeeModel       = require(script.Parent:WaitForChild("BeeModel"))
 local BeetleModel    = require(script.Parent:WaitForChild("BeetleModel"))
+local ButterflyModel = require(script.Parent:WaitForChild("ButterflyModel"))
 
 -- ─────────────────────────────────────────
 -- Per-player state
@@ -216,6 +217,8 @@ local function spawnCompanion(player)
 		model, body, hpFill, nameLbl, spiderParts = BeeModel.Build(stageIndex)
 	elseif data.insectType == "Beetle" then
 		model, body, hpFill, nameLbl, spiderParts = BeetleModel.Build(stageIndex)
+	elseif data.insectType == "Butterfly" then
+		model, body, hpFill, nameLbl, spiderParts = ButterflyModel.Build(stageIndex)
 	else
 		model, body, hpFill, nameLbl = buildCompanionModel(data.insectType, stageIndex)
 	end
