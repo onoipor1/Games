@@ -28,7 +28,16 @@
       "ZoneManager":         { "$path": "src/ServerScriptService/ZoneManager.server.lua" },
       "LeaderboardServer":   { "$path": "src/ServerScriptService/LeaderboardServer.server.lua" },
       "InsectCompanion":     { "$path": "src/ServerScriptService/InsectCompanion.server.lua" },
-      "TalentServer":        { "$path": "src/ServerScriptService/TalentServer.server.lua" }
+      "TalentServer":        { "$path": "src/ServerScriptService/TalentServer.server.lua" },
+
+      "SpiderModel":         { "$path": "src/ServerScriptService/SpiderModel.lua" },
+      "AntModel":            { "$path": "src/ServerScriptService/AntModel.lua" },
+      "BeeModel":            { "$path": "src/ServerScriptService/BeeModel.lua" },
+      "BeetleModel":         { "$path": "src/ServerScriptService/BeetleModel.lua" },
+      "ButterflyModel":      { "$path": "src/ServerScriptService/ButterflyModel.lua" },
+
+      "GrasslandEnemyModels": { "$path": "src/ServerScriptService/GrasslandEnemyModels.lua" },
+      "WetlandEnemyModels":   { "$path": "src/ServerScriptService/WetlandEnemyModels.lua" }
     },
 
     "StarterPlayer": {
