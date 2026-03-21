@@ -15,7 +15,12 @@ local ZoneData   = require(ReplicatedStorage:WaitForChild("ZoneData"))
 local LevelData  = require(ReplicatedStorage:WaitForChild("LevelData"))
 local GameConfig = require(ReplicatedStorage:WaitForChild("GameConfig"))
 
-local GrasslandModels = require(script.Parent:WaitForChild("GrasslandEnemyModels"))
+-- Zone-specific detailed model builders.
+-- Add a new entry here whenever a zone's models are implemented.
+local ZoneModels = {
+	Grassland = require(script.Parent:WaitForChild("GrasslandEnemyModels")),
+	Wetland   = require(script.Parent:WaitForChild("WetlandEnemyModels")),
+}
 
 local Remotes = ReplicatedStorage:WaitForChild("Remotes")
 
@@ -439,8 +444,9 @@ local function spawnEnemy(def, zoneKey, spawnPos)
 	local maxHP  = math.floor(scaledHP * hpMult)
 
 	local model, body, hpBar, enemyParts
-	if zoneKey == "Grassland" then
-		model, body, hpBar, enemyParts = GrasslandModels.Build(def, mobLevel)
+	local zoneBuilder = ZoneModels[zoneKey]
+	if zoneBuilder then
+		model, body, hpBar, enemyParts = zoneBuilder.Build(def, mobLevel)
 	end
 	if not model then
 		model, body, hpBar = buildEnemyModel(def, mobLevel)
