@@ -641,7 +641,12 @@ local function onPlayerAdded(player)
 
 		if data.insectType then
 			applyStats(player, data)
-			-- Spawn companion pet model (InsectCompanion.server.lua)
+			-- Wait for InsectCompanion to register _G.SpawnCompanion (parallel script startup)
+			local waited = 0
+			while not _G.SpawnCompanion and waited < 5 do
+				task.wait(0.1)
+				waited = waited + 0.1
+			end
 			if _G.SpawnCompanion then
 				_G.SpawnCompanion(player)
 			end
@@ -673,6 +678,11 @@ local function onPlayerAdded(player)
 
 		if data.insectType then
 			applyStats(player, data)
+			local waited = 0
+			while not _G.SpawnCompanion and waited < 5 do
+				task.wait(0.1)
+				waited = waited + 0.1
+			end
 			if _G.SpawnCompanion then
 				_G.SpawnCompanion(player)
 			end

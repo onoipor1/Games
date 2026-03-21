@@ -14,6 +14,11 @@ local player    = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local camera    = workspace.CurrentCamera
 
+-- Keep character reference fresh across respawns (insect selection triggers LoadCharacter)
+player.CharacterAdded:Connect(function(newChar)
+	character = newChar
+end)
+
 -- ─────────────────────────────────────────
 -- Remote shortcuts
 -- ─────────────────────────────────────────
