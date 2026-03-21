@@ -15,6 +15,8 @@ local ZoneData   = require(ReplicatedStorage:WaitForChild("ZoneData"))
 local LevelData  = require(ReplicatedStorage:WaitForChild("LevelData"))
 local GameConfig = require(ReplicatedStorage:WaitForChild("GameConfig"))
 
+local GrasslandModels = require(script.Parent:WaitForChild("GrasslandEnemyModels"))
+
 local Remotes = ReplicatedStorage:WaitForChild("Remotes")
 
 -- ─────────────────────────────────────────
@@ -436,7 +438,13 @@ local function spawnEnemy(def, zoneKey, spawnPos)
 	local hpMult = (_G.ActiveEvent and _G.ActiveEvent.enemyHealthMult) or 1.0
 	local maxHP  = math.floor(scaledHP * hpMult)
 
-	local model, body, hpBar = buildEnemyModel(def, mobLevel)
+	local model, body, hpBar, enemyParts
+	if zoneKey == "Grassland" then
+		model, body, hpBar, enemyParts = GrasslandModels.Build(def, mobLevel)
+	end
+	if not model then
+		model, body, hpBar = buildEnemyModel(def, mobLevel)
+	end
 
 	local pos = spawnPos or ZoneData.RandomPosOutsideSafe(zoneKey, 3)
 	body.CFrame = CFrame.new(pos)
@@ -446,6 +454,7 @@ local function spawnEnemy(def, zoneKey, spawnPos)
 		model        = model,
 		body         = body,
 		hpBar        = hpBar,
+		parts        = enemyParts,
 		def          = def,
 		zoneKey      = zoneKey,
 		mobLevel     = mobLevel,
@@ -659,6 +668,16 @@ local function updateEnemy(rec, dt)
 	elseif attackType == "aoe" then
 		rec.lastAttack = now
 		doAOE(rec)
+	end
+
+	-- Update multi-part model offsets (Grassland detailed models)
+	if rec.parts then
+		local bodyCF = rec.body.CFrame
+		for _, pd in ipairs(rec.parts) do
+			if pd.part and pd.part.Parent then
+				pd.part.CFrame = bodyCF * pd.offset
+			end
+		end
 	end
 end
 
